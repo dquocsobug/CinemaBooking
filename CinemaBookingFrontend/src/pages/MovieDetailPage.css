@@ -654,61 +654,177 @@
 
 @media (max-width: 1024px) {
   .detail-hero-content {
-    grid-template-columns: 220px 1fr;
-    padding-left: 32px;
-    padding-right: 32px;
+    grid-template-columns: 1fr;
+    padding: 48px 32px 40px;
+    gap: 28px;
+  }
+
+  .detail-poster-wrap {
+    max-width: 280px;
+    margin: 0 auto;
+  }
+
+  .detail-poster {
+    margin: 0 auto;
+  }
+
+  .detail-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .detail-main {
     grid-template-columns: 1fr;
-    padding-left: 32px;
-    padding-right: 32px;
+    padding: 48px 32px 64px;
+    gap: 32px;
   }
 
   .related-section {
-    padding-left: 32px;
-    padding-right: 32px;
+    padding: 0 32px 64px;
   }
 
   .booking-widget {
     position: relative;
     top: 0;
   }
+
+  .detail-actions {
+    flex-wrap: wrap;
+    gap: 14px;
+  }
 }
 
 @media (max-width: 768px) {
+  .detail-hero {
+    min-height: auto;
+  }
+
   .detail-hero-content {
-    grid-template-columns: 1fr;
-    padding: 100px 20px 56px;
+    padding: 80px 20px 40px;
+    gap: 22px;
   }
 
   .detail-poster-wrap {
-    max-width: 220px;
+    max-width: 100%;
+  }
+
+  .detail-info {
+    width: 100%;
   }
 
   .detail-facts {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
 
   .detail-main {
-    padding: 56px 20px;
+    padding: 40px 18px;
+    gap: 28px;
   }
 
-  .review-grid {
-    grid-template-columns: 1fr;
+  .detail-left {
+    gap: 32px;
+  }
+
+  .booking-widget {
+    padding: 20px;
+  }
+
+  .booking-widget h3 {
+    font-size: 20px;
+  }
+
+  .detail-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .detail-actions button,
+  .detail-btn-icon {
+    width: 100%;
+  }
+
+  .date-list {
+    gap: 8px;
+  }
+
+  .date-list button {
+    flex: 0 0 64px;
+    min-width: 64px;
+    height: 72px;
+    padding: 0 8px;
+  }
+
+  .showtime-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .related-section {
-    padding-left: 20px;
-    padding-right: 20px;
+    padding: 0 18px 60px;
+  }
+}
+
+@media (max-width: 520px) {
+  .detail-hero-content {
+    padding: 60px 16px 28px;
+    gap: 20px;
   }
 
-  .detail-actions button {
-    width: 100%;
+  .detail-hero {
+    min-height: 55vh;
   }
 
-  .detail-btn-icon {
-    width: 100%;
+  .detail-hero-gradient {
+    background:
+      linear-gradient(to top, #131313 0%, rgba(19, 19, 19, 0.82) 48%, transparent 100%),
+      linear-gradient(to right, rgba(19, 19, 19, 0.96), rgba(19, 19, 19, 0.32), transparent);
+  }
+
+  .detail-poster {
+    border-radius: 16px;
+  }
+
+  .detail-info h1 {
+    font-size: clamp(30px, 9vw, 42px);
+  }
+
+  .detail-meta-row {
+    gap: 12px;
+  }
+
+  .detail-facts {
+    padding: 16px 0;
+  }
+
+  .date-list button {
+    flex: 0 0 58px;
+    min-width: 58px;
+    height: 68px;
+  }
+
+  .showtime-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .related-card {
+    flex: 0 0 160px;
+  }
+
+  .related-card h3 {
+    font-size: 14px;
+  }
+
+  .booking-widget {
+    padding: 18px;
+  }
+
+  .detail-description,
+  .review-form {
+    padding: 22px;
+  }
+
+  .review-form-row {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
 .cinema-default {

@@ -8,6 +8,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [keyword, setKeyword] = useState("");
   const [openUserMenu, setOpenUserMenu] = useState(false);
+  const [openMobileMenu, setOpenMobileMenu] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -44,6 +45,13 @@ const Navbar = () => {
       </div>
 
       <div className="cine-navbar__right">
+        <button
+          type="button"
+          className="cine-navbar__menu-btn"
+          onClick={() => setOpenMobileMenu((prev) => !prev)}
+        >
+          ☰
+        </button>
         <form className="cine-navbar__search" onSubmit={handleSearch}>
           <input
             value={keyword}
@@ -114,6 +122,25 @@ const Navbar = () => {
           </button>
         )}
       </div>
+      {openMobileMenu && (
+        <div className="cine-navbar__mobile-menu">
+          <NavLink to="/" end onClick={() => setOpenMobileMenu(false)}>
+            Trang chủ
+          </NavLink>
+          <NavLink to="/movies" onClick={() => setOpenMobileMenu(false)}>
+            Phim đang chiếu
+          </NavLink>
+          <NavLink to="/coming-soon" onClick={() => setOpenMobileMenu(false)}>
+            Sắp chiếu
+          </NavLink>
+          <NavLink to="/cinemas" onClick={() => setOpenMobileMenu(false)}>
+            Rạp chiếu
+          </NavLink>
+          <NavLink to="/promotions" onClick={() => setOpenMobileMenu(false)}>
+            Khuyến mãi
+          </NavLink>
+        </div>
+      )}
     </header>
   );
 };

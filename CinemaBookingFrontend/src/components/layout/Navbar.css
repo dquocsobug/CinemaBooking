@@ -306,3 +306,83 @@
   font-size: 20px;
   filter: drop-shadow(0 0 6px rgba(255,255,255,0.35));
 }
+.cine-navbar__menu-btn {
+  display: none;
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.cine-navbar__mobile-menu {
+  display: none;
+}
+
+@media (max-width: 920px) {
+  .cine-navbar__menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cine-navbar__right {
+    gap: 12px;
+  }
+
+  .cine-navbar__mobile-menu {
+    position: fixed;
+    top: 70px;
+    left: 12px;
+    right: 12px;
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    border-radius: 16px;
+    background: rgba(28, 27, 27, 0.98);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
+  }
+
+  .cine-navbar__mobile-menu a {
+    color: #e5e2e1;
+    text-decoration: none;
+    padding: 13px 14px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .cine-navbar__mobile-menu a:hover,
+  .cine-navbar__mobile-menu a.active {
+    color: #fff;
+    background: rgba(229, 9, 20, 0.18);
+  }
+}
+
+@media (max-width: 480px) {
+  .cine-navbar {
+    padding: 0 14px;
+  }
+
+  .cine-navbar__logo {
+    font-size: 16px;
+  }
+
+  .cine-navbar__logo-icon {
+    display: none;
+  }
+
+  .cine-navbar__login {
+    padding: 9px 12px;
+    font-size: 13px;
+  }
+
+  .cine-navbar__avatar-btn {
+    width: 40px;
+    height: 40px;
+  }
+}

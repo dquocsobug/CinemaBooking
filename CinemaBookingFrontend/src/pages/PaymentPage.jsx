@@ -54,11 +54,10 @@ function PaymentPage() {
 
       setLoadingMethod(selectedMethod);
 
-      const response = await paymentApi.initiatePayment({
+      const response = await paymentApi.initiate({
         bookingId,
         method: selectedMethod,
       });
-
       const paymentUrl = response?.data?.paymentUrl;
 
       if (!paymentUrl) {

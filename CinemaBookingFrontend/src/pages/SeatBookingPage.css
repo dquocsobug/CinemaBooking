@@ -506,16 +506,52 @@
 
   .seat-summary {
     position: static;
+    margin-top: 30px;
+  }
+}
+
+@media (max-width: 920px) {
+  .seat-page {
+    padding: 88px 20px 56px;
+  }
+
+  .summary-poster {
+    height: 180px;
+  }
+
+  .poster-title {
+    left: 18px;
+    right: 18px;
+    bottom: 18px;
+  }
+
+  .summary-content {
+    padding: 20px;
+  }
+
+  .seat-legend {
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .voucher-row input {
+    padding: 12px 14px;
+  }
+
+  .checkout-btn {
+    padding: 16px 18px;
+    font-size: 21px;
   }
 }
 
 @media (max-width: 720px) {
   .seat-page {
-    padding: 88px 16px 56px;
+    padding: 80px 14px 48px;
   }
 
   .seat-meta {
     flex-direction: column;
+    gap: 8px;
   }
 
   .seat-meta i {
@@ -524,49 +560,128 @@
 
   .screen-label {
     letter-spacing: 0.6em;
+    font-size: 12px;
+  }
+
+  .screen-wrap {
+    margin-top: 28px;
+    margin-bottom: 72px;
   }
 
   .seat-row {
-    gap: 10px;
+    gap: 8px;
   }
 
   .seat-btn {
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
+    font-size: 8px;
   }
 
   .seat-row-grid {
-    gap: 6px;
+    gap: 5px;
   }
 
   .seat-legend {
-    gap: 14px;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .summary-poster {
+    height: 156px;
+  }
+
+  .summary-content {
     padding: 18px;
   }
 
   .summary-selected {
     flex-direction: column;
+    gap: 12px;
   }
 
   .ticket-type {
     text-align: left;
+    min-width: 0;
+  }
+
+  .voucher-row {
+    flex-direction: column;
+  }
+
+  .voucher-row button {
+    width: 100%;
+  }
+
+  .total-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .total-row > span {
+    font-size: 20px;
+  }
+
+  .total-row strong {
+    font-size: 32px;
+  }
+
+  .checkout-btn {
+    font-size: 20px;
+    padding: 16px 18px;
+  }
+
+  .policy-text {
+    font-size: 10px;
   }
 }
-.screen-label {
-  position: absolute;
-  top: -38px;
-  left: 50%;
-  transform: translateX(-50%);
-  color: rgba(229, 226, 225, 0.32);
-  text-transform: uppercase;
-  letter-spacing: 1em;
-  font-size: 13px;
-  font-weight: 700;
-  white-space: nowrap;
-  z-index: 2;
-}
-.screen-wrap {
-  position: relative;
-  margin-top: 40px;
-  margin-bottom: 90px;
+
+@media (max-width: 520px) {
+  .seat-page {
+    padding: 72px 12px 40px;
+    gap: 20px;
+  }
+
+  .seat-movie-head {
+    margin-bottom: 28px;
+  }
+
+  .seat-movie-head h1 {
+    font-size: clamp(28px, 7vw, 36px);
+  }
+
+  .seat-meta {
+    font-size: 13px;
+  }
+
+  .seat-row-grid {
+    gap: 4px;
+  }
+
+  .seat-btn {
+    width: 26px;
+    height: 26px;
+  }
+
+  .selected-seat-list span {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+
+  .ticket-type strong {
+    font-size: 13px;
+  }
+
+  .voucher-row {
+    gap: 10px;
+  }
+
+  .voucher-row input {
+    padding: 12px 12px;
+  }
+
+  .seat-summary {
+    margin-top: 24px;
+  }
 }
