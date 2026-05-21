@@ -685,3 +685,196 @@
     margin-top: 24px;
   }
 }
+/* Fix chống tràn toàn trang */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.seat-page {
+  width: 100%;
+  max-width: 100vw;
+}
+
+.seat-map-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.seat-row {
+  width: max-content;
+  min-width: 100%;
+}
+
+.seat-row-grid {
+  flex: 0 0 auto;
+}
+
+.screen-wrap {
+  overflow: hidden;
+}
+
+.screen-light {
+  max-width: 100vw;
+}
+
+/* Mobile tối ưu */
+@media (max-width: 720px) {
+  .seat-page {
+    display: block;
+    padding: 76px 12px 40px;
+  }
+
+  .seat-area {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .seat-movie-head h1 {
+    font-size: 28px;
+    word-break: break-word;
+  }
+
+  .seat-meta span {
+    max-width: 100%;
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  .screen-wrap {
+    width: 100%;
+    margin-top: 24px;
+    margin-bottom: 56px;
+  }
+
+  .screen-label {
+    top: -54px;
+    letter-spacing: 0.35em;
+    font-size: 11px;
+  }
+
+  .seat-map-wrap {
+    padding: 0 4px 12px;
+    margin-bottom: 24px;
+  }
+
+  .seat-row {
+    gap: 6px;
+    margin-bottom: 9px;
+  }
+
+  .row-label {
+    width: 18px;
+    font-size: 12px;
+  }
+
+  .seat-row-grid {
+    gap: 4px;
+  }
+
+  .seat-btn {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    font-size: 7px;
+    border-radius: 4px;
+  }
+
+  .seat-btn.couple,
+  .seat-btn.locked {
+    border-width: 1px;
+  }
+
+  .seat-legend {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 14px;
+    border-radius: 16px;
+  }
+
+  .seat-legend div {
+    font-size: 12px;
+  }
+
+  .seat-summary {
+    width: 100%;
+    margin-top: 24px;
+    border-radius: 22px;
+  }
+
+  .summary-poster {
+    height: 140px;
+  }
+
+  .poster-title h2 {
+    font-size: 20px;
+  }
+
+  .summary-content {
+    padding: 16px;
+  }
+
+  .price-list div,
+  .total-row {
+    gap: 10px;
+  }
+
+  .price-list span,
+  .price-list strong {
+    font-size: 13px;
+  }
+
+  .voucher-row {
+    flex-direction: column;
+  }
+
+  .voucher-row button {
+    height: 44px;
+  }
+
+  .checkout-btn {
+    font-size: 16px;
+    letter-spacing: 0.04em;
+    padding: 15px 16px;
+    border-radius: 16px;
+  }
+}
+
+@media (max-width: 420px) {
+  .seat-page {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .seat-btn {
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    font-size: 6.5px;
+  }
+
+  .seat-row-grid {
+    gap: 3px;
+  }
+
+  .row-label {
+    width: 16px;
+  }
+
+  .seat-row {
+    gap: 4px;
+  }
+
+  .total-row strong {
+    font-size: 28px;
+  }
+}

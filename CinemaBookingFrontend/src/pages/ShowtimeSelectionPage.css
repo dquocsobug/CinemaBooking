@@ -567,3 +567,137 @@
     font-size: 15px;
   }
 }
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.showtime-page {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+.showtime-layout,
+.showtime-main,
+.showtime-movie-header,
+.showtime-movie-info,
+.cinema-card,
+.booking-summary,
+.filter-card {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.showtime-movie-info h1,
+.showtime-movie-info p,
+.cinema-head h2,
+.cinema-head p,
+.summary-item strong {
+  overflow-wrap: anywhere;
+}
+
+.date-list {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 760px) {
+  .showtime-page {
+    padding: 80px 12px 40px;
+  }
+
+  .showtime-movie-header {
+    width: 100%;
+  }
+
+  .showtime-poster-wrap {
+    width: min(220px, 100%);
+    max-width: 220px;
+  }
+
+  .filter-card {
+    width: 100%;
+    grid-template-columns: 1fr;
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .select-wrap,
+  .select-wrap select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .cinema-card {
+    width: 100%;
+    padding: 18px;
+    border-radius: 20px;
+  }
+
+  .cinema-head {
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+
+  .time-list {
+    width: 100%;
+  }
+
+  .time-card {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .booking-summary {
+    width: 100%;
+    padding: 18px;
+    border-radius: 20px;
+  }
+}
+
+@media (max-width: 520px) {
+  .showtime-page {
+    padding: 76px 10px 36px;
+  }
+
+  .showtime-poster-wrap {
+    width: min(190px, 100%);
+    max-width: 190px;
+  }
+
+  .showtime-movie-info h1 {
+    font-size: 28px;
+    line-height: 1.15;
+  }
+
+  .showtime-movie-info p {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .date-card {
+    flex: 0 0 64px;
+    min-width: 64px;
+  }
+
+  .cinema-card {
+    padding: 16px;
+  }
+
+  .cinema-head h2 {
+    font-size: 20px;
+  }
+
+  .summary-total > div {
+    gap: 12px;
+  }
+}

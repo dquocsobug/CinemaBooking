@@ -935,3 +935,336 @@
   color: #e9bcb6;
   text-align: center;
 }
+/* ===== MOBILE FIX OVERRIDE ===== */
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .detail-hero-content {
+    min-height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 72px 16px 36px;
+  }
+
+  .detail-poster-wrap {
+    width: 100%;
+    max-width: 230px;
+  }
+
+  .detail-info {
+    text-align: center;
+  }
+
+  .detail-genres,
+  .detail-meta-row,
+  .detail-actions {
+    justify-content: center;
+  }
+
+  .detail-info h1 {
+    font-size: clamp(28px, 9vw, 40px);
+    line-height: 1.05;
+    word-break: break-word;
+  }
+
+  .detail-original-title {
+    font-size: 17px;
+  }
+
+  .detail-facts {
+    grid-template-columns: repeat(2, 1fr);
+    text-align: left;
+  }
+
+  .detail-main {
+    display: flex;
+    flex-direction: column;
+    padding: 36px 16px;
+  }
+
+  .review-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .review-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .booking-widget {
+    width: 100%;
+    position: static;
+  }
+
+  .showtime-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .related-row {
+    gap: 14px;
+  }
+
+  .related-card {
+    flex: 0 0 145px;
+  }
+}
+
+@media (max-width: 480px) {
+  .detail-hero-content {
+    padding: 56px 14px 28px;
+  }
+
+  .detail-poster-wrap {
+    max-width: 190px;
+  }
+
+  .detail-info h1 {
+    font-size: 28px;
+  }
+
+  .detail-facts {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-actions {
+    width: 100%;
+  }
+
+  .detail-actions button {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .detail-description,
+  .review-form,
+  .review-card,
+  .booking-widget {
+    padding: 18px;
+  }
+
+  .review-form-row {
+    flex-direction: column;
+  }
+
+  .review-form select {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 8px;
+  }
+
+  .date-list button {
+    flex: 0 0 54px;
+    min-width: 54px;
+    height: 66px;
+  }
+
+  .showtime-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .related-section {
+    padding: 0 16px 48px;
+  }
+
+  .related-card {
+    flex: 0 0 135px;
+  }
+}
+/* ===== FIX CONTENT / REVIEW / BOOKING RESPONSIVE ===== */
+
+@media (max-width: 1024px) {
+  .detail-main {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-booking {
+    order: -1;
+  }
+
+  .booking-widget {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .detail-main {
+    padding: 32px 16px;
+    gap: 28px;
+  }
+
+  .detail-left {
+    gap: 36px;
+  }
+
+  .detail-block h2,
+  .related-section h2 {
+    font-size: 22px;
+    margin-bottom: 18px;
+  }
+
+  /* Nội dung phim */
+  .detail-description {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .detail-description p {
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* Form đánh giá */
+  .review-form {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .review-form-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .review-form label {
+    width: 100%;
+  }
+
+  .review-form select {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 8px;
+  }
+
+  .spoiler-check {
+    justify-content: flex-start;
+  }
+
+  .review-form textarea {
+    min-height: 120px;
+    font-size: 14px;
+  }
+
+  .review-form button {
+    width: 100%;
+    padding: 14px;
+  }
+
+  /* Danh sách đánh giá */
+  .review-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .review-card {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .review-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .review-card p {
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  /* Mua vé nhanh */
+  .detail-booking {
+    width: 100%;
+  }
+
+  .booking-widget {
+    position: static;
+    width: 100%;
+    padding: 18px;
+    border-radius: 18px;
+  }
+
+  .booking-widget h3 {
+    font-size: 21px;
+    margin-bottom: 20px;
+  }
+
+  .booking-group {
+    margin-bottom: 20px;
+  }
+
+  .date-list {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+
+  .date-list button {
+    flex: 0 0 58px;
+    min-width: 58px;
+    height: 68px;
+  }
+
+  .showtime-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .showtime-grid button {
+    min-height: 58px;
+    padding: 10px 6px;
+  }
+
+  .cinema-default {
+    padding: 13px;
+  }
+
+  .booking-submit {
+    font-size: 15px;
+    padding: 15px;
+  }
+}
+
+@media (max-width: 420px) {
+  .detail-main {
+    padding: 28px 12px;
+  }
+
+  .detail-description,
+  .review-form,
+  .review-card,
+  .booking-widget {
+    padding: 16px;
+  }
+
+  .detail-block h2,
+  .related-section h2 {
+    font-size: 20px;
+  }
+
+  .detail-description p {
+    font-size: 14px;
+  }
+
+  .showtime-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .date-list button {
+    flex: 0 0 52px;
+    min-width: 52px;
+    height: 64px;
+  }
+
+  .date-list strong {
+    font-size: 20px;
+  }
+
+  .booking-widget h3 {
+    font-size: 19px;
+  }
+}
