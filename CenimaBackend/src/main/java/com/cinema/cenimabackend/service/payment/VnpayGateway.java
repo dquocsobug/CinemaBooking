@@ -4,19 +4,25 @@ import com.cinema.cenimabackend.enums.PaymentMethod;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Slf4j
 @Component
 public class VnpayGateway implements PaymentGateway {
+
+    private static final ZoneId VN_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
+    private static final DateTimeFormatter VNPAY_TIME_FORMAT =
+            DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
     @Value("${payment.vnpay.tmn-code}")
     private String tmnCode;
@@ -40,16 +46,14 @@ public class VnpayGateway implements PaymentGateway {
         try {
             String txnRef = bookingCode + "_" + System.currentTimeMillis();
             String orderInfo = "Thanh toan ve xem phim " + bookingCode;
+
             String redirectUrl = frontendReturnUrl != null && !frontendReturnUrl.isBlank()
                     ? frontendReturnUrl
                     : returnUrl;
 
-            Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-            String createDate = formatter.format(calendar.getTime());
-
-            calendar.add(Calendar.MINUTE, 15);
-            String expireDate = formatter.format(calendar.getTime());
+            ZonedDateTime now = Instant.now().atZone(VN_ZONE);
+            String createDate = now.format(VNPAY_TIME_FORMAT);
+            String expireDate = now.plusMinutes(15).format(VNPAY_TIME_FORMAT);
 
             Map<String, String> params = new HashMap<>();
             params.put("vnp_Version", "2.1.0");
@@ -72,11 +76,15 @@ public class VnpayGateway implements PaymentGateway {
             StringBuilder hashData = new StringBuilder();
             StringBuilder query = new StringBuilder();
 
-            for (int i = 0; i < fieldNames.size(); i++) {
-                String fieldName = fieldNames.get(i);
+            for (String fieldName : fieldNames) {
                 String fieldValue = params.get(fieldName);
 
                 if (fieldValue != null && !fieldValue.isBlank()) {
+                    if (!hashData.isEmpty()) {
+                        hashData.append("&");
+                        query.append("&");
+                    }
+
                     hashData.append(fieldName)
                             .append("=")
                             .append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
@@ -84,11 +92,6 @@ public class VnpayGateway implements PaymentGateway {
                     query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII))
                             .append("=")
                             .append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
-
-                    if (i < fieldNames.size() - 1) {
-                        hashData.append("&");
-                        query.append("&");
-                    }
                 }
             }
 
@@ -97,6 +100,7 @@ public class VnpayGateway implements PaymentGateway {
 
             String paymentUrl = payUrl + "?" + query;
 
+            log.info("VNPay createDate={}, expireDate={}", createDate, expireDate);
             log.info("VNPay payment created for booking {}: {}", bookingCode, paymentUrl);
 
             return PaymentInitResult.builder()
@@ -129,18 +133,17 @@ public class VnpayGateway implements PaymentGateway {
 
             StringBuilder hashData = new StringBuilder();
 
-            for (int i = 0; i < fieldNames.size(); i++) {
-                String fieldName = fieldNames.get(i);
+            for (String fieldName : fieldNames) {
                 String fieldValue = params.get(fieldName);
 
                 if (fieldValue != null && !fieldValue.isBlank()) {
+                    if (!hashData.isEmpty()) {
+                        hashData.append("&");
+                    }
+
                     hashData.append(fieldName)
                             .append("=")
                             .append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
-
-                    if (i < fieldNames.size() - 1) {
-                        hashData.append("&");
-                    }
                 }
             }
 
