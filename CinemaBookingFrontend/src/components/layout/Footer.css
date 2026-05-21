@@ -1,0 +1,136 @@
+.cine-footer {
+  width: 100%;
+  background:
+    radial-gradient(circle at top left, rgba(229, 9, 20, 0.12), transparent 34%),
+    #0e0e0e;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: #e5e2e1;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.cine-footer * {
+  box-sizing: border-box;
+}
+
+.cine-footer__top {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 56px 64px 40px;
+
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 56px;
+}
+
+.cine-footer__logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  margin-bottom: 18px;
+
+  color: #ffffff;
+  text-decoration: none;
+  font-family: "Montserrat", sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.cine-footer__logo span {
+  filter: drop-shadow(0 0 10px rgba(229, 9, 20, 0.7));
+}
+
+.cine-footer__brand p {
+  max-width: 420px;
+  margin: 0;
+  color: #c8c6c5;
+  line-height: 1.7;
+}
+
+.cine-footer__cols {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 32px;
+}
+
+.cine-footer__cols h4 {
+  margin: 0 0 18px;
+  color: #ffb4aa;
+  font-family: "Montserrat", sans-serif;
+  font-size: 17px;
+}
+
+.cine-footer__cols a,
+.cine-footer__cols p {
+  display: block;
+  margin: 0 0 12px;
+  color: #c8c6c5;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1.5;
+  transition: 0.2s;
+}
+
+.cine-footer__cols a:hover {
+  color: #e50914;
+}
+
+.cine-footer__bottom {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 22px 64px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cine-footer__bottom p {
+  margin: 0;
+  color: #9f9b9a;
+  font-size: 14px;
+}
+
+.cine-footer__socials {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.cine-footer__socials a {
+  color: #e9bcb6;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.cine-footer__socials a:hover {
+  color: #e50914;
+}
+
+@media (max-width: 900px) {
+  .cine-footer__top {
+    padding: 44px 20px 32px;
+    grid-template-columns: 1fr;
+  }
+
+  .cine-footer__cols {
+    grid-template-columns: 1fr;
+  }
+
+  .cine-footer__bottom {
+    padding: 20px;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .cine-footer__socials {
+    justify-content: center;
+  }
+}

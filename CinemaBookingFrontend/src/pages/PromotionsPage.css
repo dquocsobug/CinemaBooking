@@ -1,0 +1,712 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap");
+
+.promo-page {
+  width: 100%;
+  min-height: 100vh;
+  background: #131313;
+  color: #e5e2e1;
+  font-family: "Inter", system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+.promo-page * {
+  box-sizing: border-box;
+}
+
+.promo-hero {
+  position: relative;
+  height: 819px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  padding: 0 64px;
+}
+
+.promo-hero-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to right, #131313 0%, rgba(19, 19, 19, 0.8) 35%, transparent 80%),
+    linear-gradient(to top, #131313 0%, transparent 55%),
+    url("https://images.unsplash.com/photo-1595769816263-9b910be24d5f?q=80&w=1800&auto=format&fit=crop");
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.75);
+}
+
+.promo-hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 820px;
+}
+
+.promo-label {
+  display: inline-block;
+  padding: 8px 18px;
+  margin-bottom: 24px;
+  background: #e50914;
+  color: #fff7f6;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  box-shadow: 0 0 24px rgba(229, 9, 20, 0.35);
+}
+
+.promo-hero h1 {
+  margin: 0 0 24px;
+  font-family: "Montserrat", sans-serif;
+  font-size: clamp(46px, 7vw, 82px);
+  line-height: 1;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: white;
+}
+
+.promo-hero h1 span {
+  color: #e50914;
+  text-shadow: 0 0 14px rgba(229, 9, 20, 0.85);
+}
+
+.promo-hero p {
+  max-width: 680px;
+  margin: 0 0 40px;
+  color: #e9bcb6;
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+.promo-hero-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.promo-hero-actions button,
+.voucher-card > button,
+.member-content > button {
+  border: none;
+  background: #e50914;
+  color: #fff7f6;
+  padding: 16px 30px;
+  border-radius: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 0 24px rgba(229, 9, 20, 0.3);
+  transition: 0.25s;
+}
+
+.promo-hero-actions button:hover,
+.voucher-card > button:hover,
+.member-content > button:hover {
+  background: #c0000c;
+  transform: translateY(-2px);
+}
+
+.promo-btn-glass {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  backdrop-filter: blur(20px);
+  box-shadow: none !important;
+}
+
+.promo-slider-dots {
+  position: absolute;
+  right: 64px;
+  bottom: 40px;
+  display: flex;
+  gap: 8px;
+  z-index: 2;
+}
+
+.promo-slider-dots span {
+  width: 32px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+}
+
+.promo-slider-dots span:first-child {
+  width: 48px;
+  background: #e50914;
+}
+
+.voucher-section {
+  position: relative;
+  z-index: 5;
+  padding: 0 64px;
+  margin-top: -80px;
+}
+
+.voucher-card,
+.promo-card,
+.member-benefits div,
+.partner-box,
+.floating-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.voucher-card {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px;
+  border-radius: 18px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+  align-items: end;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.35);
+}
+
+.voucher-input-wrap label {
+  display: block;
+  margin-bottom: 10px;
+  color: #e9bcb6;
+  font-weight: 700;
+}
+
+.voucher-input {
+  position: relative;
+}
+
+.voucher-input input {
+  width: 100%;
+  padding: 16px 52px 16px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(175, 135, 130, 0.4);
+  background: #1c1b1b;
+  color: white;
+  outline: none;
+}
+
+.voucher-input input:focus {
+  border-color: #e50914;
+}
+
+.voucher-input span {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.voucher-note {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #e50914;
+  font-size: 14px;
+}
+
+.promo-section,
+.event-section {
+  padding: 80px 64px;
+}
+
+.promo-section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 48px;
+}
+
+.promo-section-head h2,
+.member-content h2,
+.event-section h2 {
+  margin: 0;
+  color: white;
+  font-family: "Montserrat", sans-serif;
+  font-size: clamp(34px, 4vw, 56px);
+  line-height: 1.1;
+}
+
+.promo-section-head div div {
+  width: 80px;
+  height: 4px;
+  margin-top: 12px;
+  background: #e50914;
+}
+
+.promo-arrows {
+  display: flex;
+  gap: 10px;
+}
+
+.promo-arrows button {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: transparent;
+  color: white;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+.promo-arrows button:hover {
+  background: #e50914;
+}
+
+.promo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.promo-card {
+  border-radius: 18px;
+  overflow: hidden;
+  transition: 0.35s;
+}
+
+.promo-card:hover {
+  border-color: rgba(229, 9, 20, 0.55);
+  transform: translateY(-6px);
+}
+
+.promo-card-vip {
+  border-color: rgba(229, 9, 20, 0.35);
+}
+
+.promo-card-img {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+
+.promo-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: 0.5s;
+}
+
+.promo-card:hover img {
+  transform: scale(1.1);
+}
+
+.promo-card-img span {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: #e50914;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.promo-card-vip .promo-card-img span {
+  background: #eab308;
+  color: #111;
+}
+
+.promo-card-body {
+  padding: 24px;
+}
+
+.promo-card-body h3 {
+  margin: 0 0 10px;
+  color: white;
+  font-family: "Montserrat", sans-serif;
+  font-size: 22px;
+}
+
+.promo-card-body p {
+  margin: 0 0 20px;
+  color: #e9bcb6;
+  line-height: 1.6;
+}
+
+.promo-card-footer {
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.promo-card-footer small {
+  color: #af8782;
+}
+
+.promo-card-footer button {
+  border: none;
+  background: transparent;
+  color: #e50914;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.member-section {
+  padding: 80px 64px;
+  background: #1c1b1b;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+
+.member-content h2 span {
+  color: #e50914;
+}
+
+.member-content > p {
+  color: #e9bcb6;
+  font-size: 18px;
+  line-height: 1.7;
+  margin: 24px 0 32px;
+}
+
+.member-benefits {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 32px;
+}
+
+.member-benefits div {
+  padding: 20px;
+  border-radius: 14px;
+}
+
+.member-benefits strong {
+  font-size: 30px;
+}
+
+.member-benefits h4 {
+  margin: 10px 0 8px;
+  color: white;
+  font-family: "Montserrat", sans-serif;
+}
+
+.member-benefits p {
+  margin: 0;
+  color: #e9bcb6;
+}
+
+.member-visual {
+  position: relative;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.member-visual::before {
+  content: "";
+  position: absolute;
+  inset: 20px;
+  background: rgba(229, 9, 20, 0.2);
+  filter: blur(80px);
+  border-radius: 999px;
+}
+
+.member-visual img {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+}
+
+.member-stat {
+  position: absolute;
+  left: -24px;
+  bottom: -24px;
+  z-index: 2;
+  padding: 20px 24px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(229, 9, 20, 0.35);
+}
+
+.member-stat strong {
+  display: block;
+  color: white;
+  font-size: 30px;
+  font-family: "Montserrat", sans-serif;
+}
+
+.member-stat span {
+  color: #e9bcb6;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.event-section h2 {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin-bottom: 80px;
+}
+
+.event-card {
+  position: relative;
+  height: 400px;
+  border-radius: 18px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.event-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: 0.7s;
+}
+
+.event-card:hover img {
+  transform: scale(1.1);
+}
+
+.event-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, #000, transparent);
+}
+
+.event-card div {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: 28px;
+}
+
+.event-card span {
+  color: #e50914;
+  text-transform: uppercase;
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.event-card h3 {
+  color: white;
+  margin: 10px 0;
+  font-family: "Montserrat", sans-serif;
+  font-size: 24px;
+}
+
+.event-card p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.76);
+}
+
+.partner-box {
+  border-radius: 24px;
+  padding: 40px;
+  text-align: center;
+}
+
+.partner-box > p {
+  margin: 0 0 28px;
+  color: #e9bcb6;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-weight: 700;
+}
+
+.partner-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 28px;
+}
+
+.partner-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.partner-item span {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: #e50914;
+  color: white;
+  font-weight: 900;
+}
+
+.partner-item strong {
+  color: white;
+  font-family: "Montserrat", sans-serif;
+}
+
+.floating-voucher {
+  position: fixed;
+  right: 32px;
+  bottom: 32px;
+  z-index: 100;
+}
+
+.floating-card {
+  position: absolute;
+  right: 0;
+  bottom: 78px;
+  width: 260px;
+  padding: 16px;
+  border-radius: 18px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition: 0.25s;
+}
+
+.floating-voucher:hover .floating-card {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.floating-card p {
+  margin: 0 0 12px;
+  color: white;
+  font-weight: 800;
+}
+
+.floating-card > div {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.floating-card strong,
+.floating-card small {
+  display: block;
+}
+
+.floating-card small {
+  color: #e9bcb6;
+}
+
+.floating-card button,
+.floating-btn {
+  border: none;
+  background: #e50914;
+  color: white;
+  cursor: pointer;
+}
+
+.floating-card button {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  font-weight: 800;
+}
+
+.floating-btn {
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  font-size: 28px;
+  box-shadow: 0 0 28px rgba(229, 9, 20, 0.45);
+}
+
+@media (max-width: 1100px) {
+  .promo-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .member-section {
+    grid-template-columns: 1fr;
+  }
+
+  .event-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .promo-hero,
+  .promo-section,
+  .event-section,
+  .member-section,
+  .voucher-section {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .promo-hero {
+    height: 720px;
+  }
+
+  .voucher-card {
+    grid-template-columns: 1fr;
+  }
+
+  .promo-grid,
+  .member-benefits {
+    grid-template-columns: 1fr;
+  }
+
+  .promo-section-head {
+    align-items: flex-start;
+  }
+
+  .promo-arrows {
+    display: none;
+  }
+
+  .member-stat {
+    left: 12px;
+    bottom: 12px;
+  }
+
+  .floating-voucher {
+    right: 20px;
+    bottom: 20px;
+  }
+}
+.partner-logo-box {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background: #fff;
+  padding: 6px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.partner-logo-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.partner-logo-box span {
+  display: none;
+  color: #e50914;
+  font-weight: 900;
+  font-size: 13px;
+}
+
+.partner-logo-box.logo-error img {
+  display: none;
+}
+
+.partner-logo-box.logo-error span {
+  display: block;
+}

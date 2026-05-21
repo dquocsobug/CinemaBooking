@@ -1,0 +1,16 @@
+package com.cinema.cenimabackend.config;
+
+import org.springframework.context.annotation.*;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+
+@Configuration
+public class RedisListenerConfig {
+
+    @Bean
+    public RedisMessageListenerContainer redisContainer(RedisConnectionFactory factory) {
+        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+        container.setConnectionFactory(factory);
+        return container;
+    }
+}

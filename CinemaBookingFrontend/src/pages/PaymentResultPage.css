@@ -1,0 +1,62 @@
+.payment-result-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: #111827;
+}
+
+.payment-result-card {
+  width: 100%;
+  max-width: 420px;
+  background: #1f2937;
+  padding: 32px;
+  border-radius: 16px;
+  text-align: center;
+  color: white;
+}
+
+.payment-status {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  font-weight: bold;
+}
+
+.payment-status.success {
+  background: #16a34a;
+}
+
+.payment-status.failed {
+  background: #dc2626;
+}
+
+.payment-result-actions {
+  margin-top: 24px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.home-btn,
+.booking-btn {
+  padding: 12px 18px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: white;
+  font-weight: 600;
+}
+
+.home-btn {
+  background: #374151;
+}
+
+.booking-btn {
+  background: #2563eb;
+}
