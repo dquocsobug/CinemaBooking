@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import movieApi from "../api/movieApi";
 import { formatAgeRating } from "../utils/format";
 import { getPosterUrl, handleImageError } from "../utils/helpers";
@@ -38,12 +39,12 @@ const STATIC_COMING_SOON = [
       "https://res.cloudinary.com/dmapggr4w/image/upload/v1779027562/Neon_Overdrive_kfxmvu",
   },
   {
-  id: "coming-5",
-  title: "The Manor",
-  releaseText: "Coming Feb 28",
-  posterUrl:
-    "https://res.cloudinary.com/dmapggr4w/image/upload/v1779027562/The_Manor_byveff",
-},
+    id: "coming-5",
+    title: "The Manor",
+    releaseText: "Coming Feb 28",
+    posterUrl:
+      "https://res.cloudinary.com/dmapggr4w/image/upload/v1779027562/The_Manor_byveff",
+  },
 ];
 
 const STATIC_TRAILERS = [
@@ -70,17 +71,12 @@ const STATIC_TRAILERS = [
   },
 ];
 
-const MovieCardSkeleton = () => <div className="cl-movie-skeleton" />;
-
 const MovieCard = ({ movie }) => {
   const navigate = useNavigate();
   const ageMeta = formatAgeRating(movie.ageRating);
 
   return (
-    <div
-      className="now-card"
-      onClick={() => navigate(`/movies/${movie.slug}`)}
-    >
+    <div className="now-card" onClick={() => navigate(`/movies/${movie.slug}`)}>
       <img
         className="now-card__img"
         src={getPosterUrl(movie.posterUrl)}
@@ -100,6 +96,7 @@ const MovieCard = ({ movie }) => {
       <div className="now-card__overlay">
         <h3>{movie.title}</h3>
         <button
+          type="button"
           onClick={(e) => {
             e.stopPropagation();
             navigate(`/movies/${movie.slug}`);
@@ -112,34 +109,40 @@ const MovieCard = ({ movie }) => {
   );
 };
 
+async function fetchNowShowing() {
+  const res = await movieApi.getNowShowing({ page: 0, size: 10 });
+  return res?.data?.content || [];
+}
+
 const HomePage = () => {
   const navigate = useNavigate();
 
-  const [nowShowing, setNowShowing] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    const fetchMovies = async () => {
-      try {
-        setLoading(true);
-        setError("");
-
-        const res = await movieApi.getNowShowing({ page: 0, size: 10 });
-
-        setNowShowing(res.data?.content || []);
-      } catch (err) {
-        console.error("Fetch now showing error:", err);
-        setError("Không thể tải phim đang chiếu");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMovies();
-  }, []);
+  const {
+    data: nowShowing = [],
+    isLoading: loading,
+    error,
+  } = useQuery({
+    queryKey: ["now-showing", { page: 0, size: 10 }],
+    queryFn: fetchNowShowing,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    retry: 1,
+  });
 
   const heroMovie = useMemo(() => nowShowing[0], [nowShowing]);
+
+  function handleOpenTrailer() {
+    if (!heroMovie?.trailerUrl) return;
+
+    let youtubeUrl = heroMovie.trailerUrl;
+
+    if (youtubeUrl.includes("/embed/")) {
+      const videoId = youtubeUrl.split("/embed/")[1];
+      youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`;
+    }
+
+    window.open(youtubeUrl, "_blank");
+  }
 
   return (
     <div className="cine-home">
@@ -155,19 +158,21 @@ const HomePage = () => {
         <div className="cine-hero-content">
           <div className="cine-hero-meta-top">
             <span className="cine-hot-badge">Hot Now</span>
-            <span className="cine-rating">★ {heroMovie?.rating || "8.8"}/10</span>
+            <span className="cine-rating">
+              ★ {heroMovie?.rating || "8.8"}/10
+            </span>
           </div>
 
           <h1>{heroMovie?.title || "CINE LUXE"}</h1>
 
           <div className="cine-hero-info">
-            <span>{heroMovie?.genres?.join(", ") || "Hành động, Viễn tưởng"}</span>
+            <span>
+              {heroMovie?.genres?.join(", ") || "Hành động, Viễn tưởng"}
+            </span>
             <i />
             <span>{heroMovie?.durationMin || 166} ph</span>
             <i />
-            <span className="cine-age">
-              {heroMovie?.ageRating || "T13"}
-            </span>
+            <span className="cine-age">{heroMovie?.ageRating || "T13"}</span>
           </div>
 
           <p className="cine-hero-desc">
@@ -177,6 +182,7 @@ const HomePage = () => {
 
           <div className="cine-hero-actions">
             <button
+              type="button"
               className="cine-btn cine-btn-primary"
               onClick={() => heroMovie && navigate(`/movies/${heroMovie.slug}`)}
             >
@@ -184,23 +190,13 @@ const HomePage = () => {
             </button>
 
             <button
-  className="cine-btn cine-btn-glass"
-  onClick={() => {
-    if (heroMovie?.trailerUrl) {
-      let youtubeUrl = heroMovie.trailerUrl;
-
-      // convert embed -> watch
-      if (youtubeUrl.includes("/embed/")) {
-        const videoId = youtubeUrl.split("/embed/")[1];
-        youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`;
-      }
-
-      window.open(youtubeUrl, "_blank");
-    }
-  }}
->
-  ▶ Trailer
-</button>
+              type="button"
+              className="cine-btn cine-btn-glass"
+              onClick={handleOpenTrailer}
+              disabled={!heroMovie?.trailerUrl}
+            >
+              ▶ Trailer
+            </button>
           </div>
         </div>
       </section>
@@ -213,22 +209,22 @@ const HomePage = () => {
               <div className="cine-title-line cine-title-line-red" />
             </div>
 
-            <button className="cine-view-all">
+            <button type="button" className="cine-view-all">
               Tất cả ›
             </button>
           </div>
 
-          {error && <p className="cine-error">{error}</p>}
+          {error && <p className="cine-error">Không thể tải phim đang chiếu</p>}
 
           <div className="now-grid">
-  {loading
-    ? Array.from({ length: 5 }).map((_, index) => (
-        <div className="now-card-skeleton" key={index} />
-      ))
-    : nowShowing.slice(0, 5).map((movie) => (
-        <MovieCard key={movie.id} movie={movie} />
-      ))}
-</div>
+            {loading
+              ? Array.from({ length: 5 }).map((_, index) => (
+                  <div className="now-card-skeleton" key={index} />
+                ))
+              : nowShowing
+                  .slice(0, 5)
+                  .map((movie) => <MovieCard key={movie.id} movie={movie} />)}
+          </div>
         </section>
 
         <section className="cine-section cine-coming-section">

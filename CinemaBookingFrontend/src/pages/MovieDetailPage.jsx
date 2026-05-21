@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import movieApi from "../api/movieApi";
 import showtimeApi from "../api/showtimeApi";
 import reviewApi from "../api/reviewApi";
@@ -30,141 +31,134 @@ const getNextDates = () => {
   });
 };
 
+async function fetchMovieDetail(slug) {
+  const res = await movieApi.getMovieDetail(slug);
+  return res?.data || null;
+}
+
+async function fetchRelatedMovies(slug) {
+  const res = await movieApi.getNowShowing({ page: 0, size: 10 });
+  const data = res?.data?.content || [];
+  return data.filter((item) => item.slug !== slug);
+}
+
+async function fetchShowtimes(movieId, selectedDate) {
+  const res = await showtimeApi.getShowtimes({
+    movieId,
+    date: selectedDate,
+  });
+
+  return Array.isArray(res?.data) ? res.data : [];
+}
+
+async function fetchReviews(movieId) {
+  const res = await reviewApi.getReviewsByMovie(movieId);
+  return res?.data?.content || [];
+}
+
 const MovieDetailPage = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  const [movie, setMovie] = useState(null);
-  const [relatedMovies, setRelatedMovies] = useState([]);
-  const [showtimes, setShowtimes] = useState([]);
   const dates = useMemo(() => getNextDates(), []);
   const [selectedDate, setSelectedDate] = useState(dates[0].value);
   const [selectedShowtimeId, setSelectedShowtimeId] = useState("");
 
-  const [reviews, setReviews] = useState([]);
   const [reviewRating, setReviewRating] = useState(9);
   const [reviewComment, setReviewComment] = useState("");
   const [reviewSpoiler, setReviewSpoiler] = useState(false);
   const [submittingReview, setSubmittingReview] = useState(false);
 
-  const [loading, setLoading] = useState(true);
-  const [showtimeLoading, setShowtimeLoading] = useState(false);
-  const [error, setError] = useState("");
+  const {
+    data: movie,
+    isLoading: loading,
+    error: movieError,
+  } = useQuery({
+    queryKey: ["movie-detail", slug],
+    queryFn: () => fetchMovieDetail(slug),
+    enabled: !!slug,
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    retry: 1,
+  });
 
+  const { data: relatedMovies = [] } = useQuery({
+    queryKey: ["related-movies", slug],
+    queryFn: () => fetchRelatedMovies(slug),
+    enabled: !!slug,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
+    retry: 1,
+  });
 
-  useEffect(() => {
-    const fetchMovieDetail = async () => {
-      try {
-        setLoading(true);
-        setError("");
+  const {
+    data: showtimes = [],
+    isLoading: showtimeLoading,
+    isFetching: fetchingShowtimes,
+  } = useQuery({
+    queryKey: ["movie-showtimes", movie?.id, selectedDate],
+    queryFn: () => fetchShowtimes(movie.id, selectedDate),
+    enabled: !!movie?.id,
+    staleTime: 2 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    placeholderData: (previousData) => previousData,
+    retry: 1,
+  });
 
-        const detailRes = await movieApi.getMovieDetail(slug);
-        const movieData = detailRes?.data || null;
-
-        setMovie(movieData);
-
-        try {
-          const relatedRes = await movieApi.getNowShowing({ page: 0, size: 10 });
-          const relatedData = relatedRes?.data?.content || [];
-          setRelatedMovies(relatedData.filter((item) => item.slug !== slug));
-        } catch (relatedErr) {
-          console.warn("Fetch related movies error:", relatedErr);
-          setRelatedMovies([]);
-        }
-      } catch (err) {
-        console.error("Fetch movie detail error:", err);
-        setError("Không thể tải chi tiết phim");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (slug) {
-      fetchMovieDetail();
-    } else {
-      setError("Thiếu slug phim");
-      setLoading(false);
-    }
-  }, [slug]);
-
- useEffect(() => {
-  if (!movie?.id) return;
-
-  const fetchShowtimes = async () => {
-    try {
-      setShowtimeLoading(true);
-
-      const res = await showtimeApi.getShowtimes({ 
-        movieId: movie.id, 
-        date: selectedDate      // ← thêm date
-      });
-
-      const allShowtimes = Array.isArray(res?.data) ? res.data : [];
-      // Bỏ filter thủ công — backend đã filter theo movieId rồi
-      setShowtimes(allShowtimes);
-      setSelectedShowtimeId(allShowtimes[0]?.id || "");
-    } catch (err) {
-      console.error("Fetch showtimes error:", err);
-      setShowtimes([]);
-      setSelectedShowtimeId("");
-    } finally {
-      setShowtimeLoading(false);
-    }
-  };
-
-  fetchShowtimes();
-}, [movie?.id, selectedDate]);   // ← thêm selectedDate vào deps
-
-useEffect(() => {
-  if (!movie?.id) return;
-
-  const fetchReviews = async () => {
-    try {
-      const res = await reviewApi.getReviewsByMovie(movie.id);
-
-      const data = res?.data?.content || [];
-
-      setReviews(data);
-    } catch (err) {
-      console.error("Fetch reviews error:", err);
-      setReviews([]);
-    }
-  };
-
-  fetchReviews();
-}, [movie?.id]);
+  const { data: reviews = [] } = useQuery({
+    queryKey: ["movie-reviews", movie?.id],
+    queryFn: () => fetchReviews(movie.id),
+    enabled: !!movie?.id,
+    staleTime: 2 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    retry: 1,
+  });
 
   const ageMeta = useMemo(() => {
     return movie?.ageRating ? formatAgeRating(movie.ageRating) : null;
   }, [movie]);
 
-  const selectedShowtime = showtimes.find(
-    (item) => item.id === selectedShowtimeId
-  );
+  const selectedShowtime = useMemo(() => {
+    return showtimes.find((item) => item.id === selectedShowtimeId);
+  }, [showtimes, selectedShowtimeId]);
+
+  const defaultShowtimeId = showtimes[0]?.id || "";
+  const currentShowtimeId = selectedShowtimeId || defaultShowtimeId;
+
+  const currentShowtime = useMemo(() => {
+    return showtimes.find((item) => item.id === currentShowtimeId);
+  }, [showtimes, currentShowtimeId]);
 
   const handleGoShowtimes = () => {
-  if (!movie?.slug) {
-    alert("Không tìm thấy thông tin phim");
-    return;
-  }
+    if (!movie?.slug) {
+      alert("Không tìm thấy thông tin phim");
+      return;
+    }
 
-  navigate(`/showtimes/${movie.slug}`);
-};
+    navigate(`/showtimes/${movie.slug}`);
+  };
 
-const handleQuickBooking = () => {
-  if (!selectedShowtimeId) {
-    alert("Vui lòng chọn suất chiếu");
-    return;
-  }
+  const handleQuickBooking = () => {
+    if (!currentShowtimeId) {
+      alert("Vui lòng chọn suất chiếu");
+      return;
+    }
 
-  navigate(`/booking/${selectedShowtimeId}`, {
-    state: {
-      movie,
-      showtime: selectedShowtime,
-    },
-  });
-};
+    navigate(`/booking/${currentShowtimeId}`, {
+      state: {
+        movie,
+        showtime: currentShowtime,
+      },
+    });
+  };
+
   const handleSubmitReview = async () => {
+    if (!movie?.id) {
+      alert("Không tìm thấy thông tin phim");
+      return;
+    }
+
     if (!reviewComment.trim()) {
       alert("Vui lòng nhập nội dung đánh giá");
       return;
@@ -183,16 +177,18 @@ const handleQuickBooking = () => {
       const res = await reviewApi.createReview(payload);
       const createdReview = res?.data;
 
-      setReviews((prev) => [
-        {
-          id: createdReview?.id || Date.now(),
-          userFullName: createdReview?.userFullName || "Bạn",
-          rating: createdReview?.rating || payload.rating,
-          comment: createdReview?.comment || payload.comment,
-          isSpoiler: createdReview?.isSpoiler || payload.isSpoiler,
-          createdAt: createdReview?.createdAt || new Date().toISOString(),
-        },
-        ...prev,
+      const newReview = {
+        id: createdReview?.id || Date.now(),
+        userFullName: createdReview?.userFullName || "Bạn",
+        rating: createdReview?.rating || payload.rating,
+        comment: createdReview?.comment || payload.comment,
+        isSpoiler: createdReview?.isSpoiler || payload.isSpoiler,
+        createdAt: createdReview?.createdAt || new Date().toISOString(),
+      };
+
+      queryClient.setQueryData(["movie-reviews", movie.id], (old = []) => [
+        newReview,
+        ...old,
       ]);
 
       setReviewComment("");
@@ -216,10 +212,13 @@ const handleQuickBooking = () => {
     );
   }
 
-  if (error || !movie) {
+  if (movieError || !movie) {
     return (
       <div className="movie-detail-page">
-        <div className="detail-loading">{error || "Không tìm thấy phim"}</div>
+        <div className="detail-loading">
+          {movieError?.response?.data?.message ||
+            "Không thể tải chi tiết phim"}
+        </div>
       </div>
     );
   }
@@ -381,8 +380,7 @@ const handleQuickBooking = () => {
             <div className="review-grid">
               {reviews.length === 0 ? (
                 <div className="glass-panel review-empty">
-                  Chưa có đánh giá nào. Hãy là người đầu tiên đánh giá
-                  phim này.
+                  Chưa có đánh giá nào. Hãy là người đầu tiên đánh giá phim này.
                 </div>
               ) : (
                 reviews.map((review) => (
@@ -454,12 +452,12 @@ const handleQuickBooking = () => {
 
               <div className="cinema-default">
                 <strong>
-                  {selectedShowtime?.cinemaName ||
+                  {currentShowtime?.cinemaName ||
                     showtimes[0]?.cinemaName ||
                     "Chưa có rạp"}
                 </strong>
                 <span>
-                  {selectedShowtime?.roomName || showtimes[0]?.roomName || ""}
+                  {currentShowtime?.roomName || showtimes[0]?.roomName || ""}
                 </span>
               </div>
             </div>
@@ -470,33 +468,39 @@ const handleQuickBooking = () => {
               {showtimeLoading ? (
                 <div className="no-showtime">Đang tải suất chiếu...</div>
               ) : (
-                <div className="showtime-grid">
-                  {showtimes.length > 0 ? (
-                    showtimes.map((item) => (
-                      <button
-                        key={item.id}
-                        className={
-                          selectedShowtimeId === item.id ? "active" : ""
-                        }
-                        onClick={() => setSelectedShowtimeId(item.id)}
-                        type="button"
-                      >
-                        <strong>
-                          {new Date(item.startTime).toLocaleTimeString(
-                            "vi-VN",
-                            {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            }
-                          )}
-                        </strong>
-                        <span>{item.roomType || item.format || "2D"}</span>
-                      </button>
-                    ))
-                  ) : (
-                    <div className="no-showtime">Chưa có suất chiếu</div>
+                <>
+                  {fetchingShowtimes && (
+                    <div style={{ fontSize: 12, opacity: 0.5, marginBottom: 8 }}>
+                      Đang cập nhật suất chiếu...
+                    </div>
                   )}
-                </div>
+
+                  <div className="showtime-grid">
+                    {showtimes.length > 0 ? (
+                      showtimes.map((item) => (
+                        <button
+                          key={item.id}
+                          className={currentShowtimeId === item.id ? "active" : ""}
+                          onClick={() => setSelectedShowtimeId(item.id)}
+                          type="button"
+                        >
+                          <strong>
+                            {new Date(item.startTime).toLocaleTimeString(
+                              "vi-VN",
+                              {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              }
+                            )}
+                          </strong>
+                          <span>{item.roomType || item.format || "2D"}</span>
+                        </button>
+                      ))
+                    ) : (
+                      <div className="no-showtime">Chưa có suất chiếu</div>
+                    )}
+                  </div>
+                </>
               )}
             </div>
 
@@ -504,9 +508,7 @@ const handleQuickBooking = () => {
               TIẾP TỤC
             </button>
 
-            <small>
-              * Giá vé có thể thay đổi tùy theo loại ghế và phòng chiếu.
-            </small>
+            <small>* Giá vé có thể thay đổi tùy theo loại ghế và phòng chiếu.</small>
           </div>
         </aside>
       </section>

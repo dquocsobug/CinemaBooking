@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import axiosClient from "../api/axiosClient";
 import "./SeatBookingPage.css";
 
-const FALLBACK_POSTER = "https://placehold.co/800x500/151515/e50914?text=Cinema";
+const FALLBACK_POSTER =
+  "https://placehold.co/800x500/151515/e50914?text=Cinema";
 const LOCK_SECONDS = 300;
 
 function formatTime(value) {
@@ -83,58 +85,37 @@ function findCouplePair(seat, seats) {
   return pairSeat ? [seat, pairSeat] : [seat];
 }
 
+async function fetchSeatMap(showtimeId) {
+  const response = await axiosClient.get(`/showtimes/${showtimeId}/seat-map`);
+  return response?.data || null;
+}
+
 export default function SeatBookingPage() {
   const { showtimeId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const stateMovie = location.state?.movie || null;
-  const stateShowtime = location.state?.showtime || null;
+  const movie = location.state?.movie || null;
+  const showtime = location.state?.showtime || null;
 
-  const [movie] = useState(stateMovie);
-  const [showtime] = useState(stateShowtime);
-  const [seatMap, setSeatMap] = useState(null);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [voucherCode, setVoucherCode] = useState("");
   const [discountAmount, setDiscountAmount] = useState(0);
   const [countdown, setCountdown] = useState(LOCK_SECONDS);
-  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
 
-  useEffect(() => {
-    if (!showtimeId) {
-      setError("Không tìm thấy showtimeId trên URL.");
-      setLoading(false);
-      return;
-    }
-
-    let mounted = true;
-
-    async function fetchSeatMap() {
-      try {
-        setLoading(true);
-        setError("");
-
-        const response = await axiosClient.get(`/showtimes/${showtimeId}/seat-map`);
-
-        if (!mounted) return;
-        setSeatMap(response?.data || null);
-      } catch (err) {
-        if (!mounted) return;
-        setError(err.message || "Không tải được sơ đồ ghế.");
-        setSeatMap(null);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    }
-
-    fetchSeatMap();
-
-    return () => {
-      mounted = false;
-    };
-  }, [showtimeId]);
+  const {
+    data: seatMap = null,
+    isLoading: loading,
+    error,
+  } = useQuery({
+    queryKey: ["seat-map", showtimeId],
+    queryFn: () => fetchSeatMap(showtimeId),
+    enabled: Boolean(showtimeId),
+    staleTime: 30 * 1000,
+    gcTime: 5 * 60 * 1000,
+    retry: 1,
+  });
 
   useEffect(() => {
     if (selectedSeats.length === 0) {
@@ -148,6 +129,7 @@ export default function SeatBookingPage() {
           setSelectedSeats([]);
           return LOCK_SECONDS;
         }
+
         return prev - 1;
       });
     }, 1000);
@@ -169,7 +151,11 @@ export default function SeatBookingPage() {
     return sum + basePrice + Number(seat.extraFee || 0);
   }, 0);
 
-  const extraFeeTotal = selectedSeats.reduce((sum, seat) => sum + Number(seat.extraFee || 0), 0);
+  const extraFeeTotal = selectedSeats.reduce(
+    (sum, seat) => sum + Number(seat.extraFee || 0),
+    0
+  );
+
   const finalTotal = Math.max(ticketTotal - discountAmount, 0);
 
   function canChooseSeat(seat) {
@@ -177,44 +163,42 @@ export default function SeatBookingPage() {
   }
 
   function handleToggleSeat(seat) {
-  if (!canChooseSeat(seat)) return;
+    if (!canChooseSeat(seat)) return;
 
-  const pairSeats = findCouplePair(seat, seats);
+    const pairSeats = findCouplePair(seat, seats);
 
-  const invalidPair = pairSeats.some((item) => !canChooseSeat(item));
-  if (invalidPair) {
-    alert("Ghế đôi này đã có ghế bị đặt hoặc đang giữ.");
-    return;
-  }
-
-  setSelectedSeats((prev) => {
-    const pairIds = pairSeats.map((item) => item.id);
-    const isSelected = pairIds.every((id) =>
-      prev.some((item) => item.id === id)
-    );
-
-    if (isSelected) {
-      return prev.filter((item) => !pairIds.includes(item.id));
+    const invalidPair = pairSeats.some((item) => !canChooseSeat(item));
+    if (invalidPair) {
+      alert("Ghế đôi này đã có ghế bị đặt hoặc đang giữ.");
+      return;
     }
 
-    const withoutPair = prev.filter((item) => !pairIds.includes(item.id));
-    return [...withoutPair, ...pairSeats];
-  });
-}
+    setSelectedSeats((prev) => {
+      const pairIds = pairSeats.map((item) => item.id);
+      const isSelected = pairIds.every((id) =>
+        prev.some((item) => item.id === id)
+      );
+
+      if (isSelected) {
+        return prev.filter((item) => !pairIds.includes(item.id));
+      }
+
+      const withoutPair = prev.filter((item) => !pairIds.includes(item.id));
+      return [...withoutPair, ...pairSeats];
+    });
+  }
 
   function getSeatClass(seat) {
     const selected = selectedSeatIds.has(seat.id);
     const booked = seat.status === "BOOKED";
     const locked = seat.status === "LOCKED" && !seat.lockedByMe;
-    const vip = false;
-const couple = seat.seatType === "VIP" || seat.seatType === "COUPLE";
+    const couple = seat.seatType === "VIP" || seat.seatType === "COUPLE";
 
     return [
       "seat-btn",
       selected ? "selected" : "",
       booked ? "booked" : "",
       locked ? "locked" : "",
-      vip ? "vip" : "",
       couple ? "couple" : "",
     ]
       .filter(Boolean)
@@ -288,12 +272,26 @@ const couple = seat.seatType === "VIP" || seat.seatType === "COUPLE";
     }
   }
 
+  if (!showtimeId) {
+    return (
+      <main className="seat-page seat-center seat-error">
+        Không tìm thấy showtimeId trên URL.
+      </main>
+    );
+  }
+
   if (loading) {
     return <main className="seat-page seat-center">Đang tải sơ đồ ghế...</main>;
   }
 
   if (error) {
-    return <main className="seat-page seat-center seat-error">{error}</main>;
+    return (
+      <main className="seat-page seat-center seat-error">
+        {error?.response?.data?.message ||
+          error?.message ||
+          "Không tải được sơ đồ ghế."}
+      </main>
+    );
   }
 
   return (
@@ -301,12 +299,20 @@ const couple = seat.seatType === "VIP" || seat.seatType === "COUPLE";
       <section className="seat-area">
         <div className="seat-movie-head">
           <h1>{movie?.title || showtime?.movieTitle || "Chọn ghế"}</h1>
+
           <div className="seat-meta">
-            <span>📅 {formatTime(showtime?.startTime)} - {formatDate(showtime?.startTime)}</span>
+            <span>
+              📅 {formatTime(showtime?.startTime)} -{" "}
+              {formatDate(showtime?.startTime)}
+            </span>
             <i />
             <span>📍 {showtime?.cinemaName || "Rạp chiếu"}</span>
             <i />
-            <span>🎭 {showtime?.roomName || normalizeRoomType(showtime?.roomType || showtime?.format)}</span>
+            <span>
+              🎭{" "}
+              {showtime?.roomName ||
+                normalizeRoomType(showtime?.roomType || showtime?.format)}
+            </span>
           </div>
         </div>
 
@@ -332,18 +338,20 @@ const couple = seat.seatType === "VIP" || seat.seatType === "COUPLE";
                       type="button"
                       className={getSeatClass(seat)}
                       disabled={disabled}
-                      title={`${seat.seatCode} - ${seat.seatType} - ${formatMoney(basePrice + Number(seat.extraFee || 0))}`}
+                      title={`${seat.seatCode} - ${
+                        seat.seatType
+                      } - ${formatMoney(
+                        basePrice + Number(seat.extraFee || 0)
+                      )}`}
                       onClick={() => handleToggleSeat(seat)}
                     >
-                      {
-  seat.status === "BOOKED"
-    ? "✕"
-    : seat.status === "LOCKED" && !seat.lockedByMe
-    ? "🔒"
-    : selected
-    ? seat.seatCode
-    : ""
-}
+                      {seat.status === "BOOKED"
+                        ? "✕"
+                        : seat.status === "LOCKED" && !seat.lockedByMe
+                        ? "🔒"
+                        : selected
+                        ? seat.seatCode
+                        : ""}
                     </button>
                   );
                 })}
@@ -355,20 +363,31 @@ const couple = seat.seatType === "VIP" || seat.seatType === "COUPLE";
         </div>
 
         <div className="seat-legend glass-panel">
-          <div><span className="legend-box available" /> Có sẵn</div>
-          <div><span className="legend-box selected" /> Đang chọn</div>
           <div>
-  <span className="legend-box booked">✕</span>
-  Đã bán
-</div>
-          <div><span className="legend-box couple" /> Ghế đôi</div>
-          <div><span className="legend-box locked" /> Giữ chỗ</div>
+            <span className="legend-box available" /> Có sẵn
+          </div>
+          <div>
+            <span className="legend-box selected" /> Đang chọn
+          </div>
+          <div>
+            <span className="legend-box booked">✕</span>
+            Đã bán
+          </div>
+          <div>
+            <span className="legend-box couple" /> Ghế đôi
+          </div>
+          <div>
+            <span className="legend-box locked" /> Giữ chỗ
+          </div>
         </div>
       </section>
 
       <aside className="seat-summary glass-panel">
         <div className="summary-poster">
-          <img src={movie?.posterUrl || showtime?.moviePoster || FALLBACK_POSTER} alt={movie?.title || "Poster"} />
+          <img
+            src={movie?.posterUrl || showtime?.moviePoster || FALLBACK_POSTER}
+            alt={movie?.title || "Poster"}
+          />
           <div className="poster-overlay" />
           <div className="poster-title">
             <span>Now Showing</span>
@@ -382,7 +401,9 @@ const couple = seat.seatType === "VIP" || seat.seatType === "COUPLE";
               <p>Ghế đã chọn</p>
               <div className="selected-seat-list">
                 {selectedSeats.length > 0 ? (
-                  selectedSeats.map((seat) => <span key={seat.id}>{seat.seatCode}</span>)
+                  selectedSeats.map((seat) => (
+                    <span key={seat.id}>{seat.seatCode}</span>
+                  ))
                 ) : (
                   <em>Chưa chọn ghế</em>
                 )}
@@ -392,10 +413,10 @@ const couple = seat.seatType === "VIP" || seat.seatType === "COUPLE";
             <div className="ticket-type">
               <p>Loại vé</p>
               <strong>
-  {selectedSeats.some((seat) => seat.seatType === "VIP")
-    ? `Ghế đôi (x${selectedSeats.length})`
-    : `Standard (x${selectedSeats.length})`}
-</strong>
+                {selectedSeats.some((seat) => seat.seatType === "VIP")
+                  ? `Ghế đôi (x${selectedSeats.length})`
+                  : `Standard (x${selectedSeats.length})`}
+              </strong>
             </div>
           </div>
 
@@ -422,7 +443,9 @@ const couple = seat.seatType === "VIP" || seat.seatType === "COUPLE";
               onChange={(e) => setVoucherCode(e.target.value)}
               placeholder="Nhập mã voucher..."
             />
-            <button type="button" onClick={handleApplyVoucher}>Áp dụng</button>
+            <button type="button" onClick={handleApplyVoucher}>
+              Áp dụng
+            </button>
           </div>
 
           <div className="divider" />
@@ -435,6 +458,12 @@ const couple = seat.seatType === "VIP" || seat.seatType === "COUPLE";
             </div>
           </div>
 
+          {selectedSeats.length > 0 && (
+            <p className="policy-text">
+              Thời gian giữ ghế: {formatCountdown(countdown)}
+            </p>
+          )}
+
           <button
             type="button"
             className="checkout-btn"
@@ -445,7 +474,8 @@ const couple = seat.seatType === "VIP" || seat.seatType === "COUPLE";
           </button>
 
           <p className="policy-text">
-            Bằng cách nhấn thanh toán, bạn đồng ý với các Điều khoản & Chính sách của Cine Luxe Premiere.
+            Bằng cách nhấn thanh toán, bạn đồng ý với các Điều khoản & Chính
+            sách của Cine Luxe Premiere.
           </p>
         </div>
       </aside>

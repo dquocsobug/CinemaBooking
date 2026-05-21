@@ -1,46 +1,80 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useEffect, useMemo } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axiosClient from "../api/axiosClient";
 import "./PaymentResultPage.css";
 
+async function confirmMomoPayment(queryString) {
+  const response = await axiosClient.get(
+    `/payments/return/momo?${queryString}`
+  );
+
+  return response?.data;
+}
+
 function PaymentResultPage() {
   const [searchParams] = useSearchParams();
-  const [status, setStatus] = useState("PROCESSING");
-  const [message, setMessage] = useState("Đang xác nhận thanh toán...");
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  const queryString = useMemo(() => searchParams.toString(), [searchParams]);
+  const queryString = useMemo(
+    () => searchParams.toString(),
+    [searchParams]
+  );
+
+  const resultCode = searchParams.get("resultCode");
+
+  const {
+    data,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["payment-return", queryString],
+    queryFn: () => confirmMomoPayment(queryString),
+    enabled: resultCode === "0" && !!queryString,
+    staleTime: Infinity,
+    retry: 0,
+  });
+
+  const isSuccess =
+    resultCode === "0" && data?.status === "SUCCESS";
 
   useEffect(() => {
-    const confirmPayment = async () => {
-      try {
-        const resultCode = searchParams.get("resultCode");
+    if (!isSuccess) return;
 
-        if (resultCode !== "0") {
-          setStatus("FAILED");
-          setMessage("Thanh toán chưa hoàn tất hoặc đã bị hủy.");
-          return;
-        }
+    queryClient.invalidateQueries({
+      queryKey: ["booking-history"],
+    });
 
-        const response = await axiosClient.get(
-          `/payments/return/momo?${queryString}`
-        );
+    const timer = setTimeout(() => {
+      navigate("/booking-history", {
+        replace: true,
+      });
+    }, 2000);
 
-        if (response?.data?.status === "SUCCESS") {
-          setStatus("SUCCESS");
-          setMessage("Thanh toán thành công. Vé của bạn đã được xác nhận.");
-        } else {
-          setStatus("FAILED");
-          setMessage("Backend chưa xác nhận được thanh toán.");
-        }
-      } catch (error) {
-        console.error(error);
-        setStatus("FAILED");
-        setMessage(error.message || "Không thể xác nhận thanh toán.");
-      }
-    };
+    return () => clearTimeout(timer);
+  }, [isSuccess, navigate, queryClient]);
 
-    confirmPayment();
-  }, [queryString, searchParams]);
+  let status = "PROCESSING";
+  let message = "Đang xác nhận thanh toán...";
+
+  if (resultCode && resultCode !== "0") {
+    status = "FAILED";
+    message = "Thanh toán chưa hoàn tất hoặc đã bị hủy.";
+  } else if (error) {
+    status = "FAILED";
+    message =
+      error?.response?.data?.message ||
+      error.message ||
+      "Không thể xác nhận thanh toán.";
+  } else if (isSuccess) {
+    status = "SUCCESS";
+    message =
+      "Thanh toán thành công. Đang chuyển đến lịch sử đặt vé...";
+  } else if (!isLoading && data?.status !== "SUCCESS") {
+    status = "FAILED";
+    message = "Backend chưa xác nhận được thanh toán.";
+  }
 
   return (
     <main className="payment-result-page">
@@ -53,15 +87,13 @@ function PaymentResultPage() {
           <strong>Trạng thái:</strong> {status}
         </p>
 
-        <div className="payment-result-actions">
-          <Link to="/" className="home-btn">
-            Về trang chủ
-          </Link>
-
-          <Link to="/my-bookings" className="booking-btn">
-            Vé của tôi
-          </Link>
-        </div>
+        {status === "PROCESSING" && (
+          <div className="payment-loading">
+            <span className="material-symbols-outlined payment-spin">
+              sync
+            </span>
+          </div>
+        )}
       </div>
     </main>
   );
