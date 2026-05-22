@@ -16,7 +16,7 @@ function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const { login } = useContext(AuthContext);
-  const from = location.state?.from?.pathname || "/";
+  const from = location.state?.from || "/";
 
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target;
@@ -55,7 +55,7 @@ function LoginPage() {
       return;
     }
 
-    navigate("/", { replace: true });
+    navigate(from, { replace: true });
   } catch (err) {
     setError(err.message || "Đăng nhập thất bại");
   } finally {

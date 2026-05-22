@@ -162,31 +162,47 @@ export default function SeatBookingPage() {
     return seat.status === "AVAILABLE" || seat.lockedByMe === true;
   }
 
+  function isLoggedIn() {
+  return Boolean(localStorage.getItem("token"));
+}
+
   function handleToggleSeat(seat) {
-    if (!canChooseSeat(seat)) return;
+  if (!isLoggedIn()) {
+    navigate("/login", {
+      replace: false,
+      state: {
+        from: location.pathname,
+        movie,
+        showtime,
+      },
+    });
+    return;
+  }
 
-    const pairSeats = findCouplePair(seat, seats);
+  if (!canChooseSeat(seat)) return;
 
-    const invalidPair = pairSeats.some((item) => !canChooseSeat(item));
-    if (invalidPair) {
-      alert("Ghế đôi này đã có ghế bị đặt hoặc đang giữ.");
-      return;
+  const pairSeats = findCouplePair(seat, seats);
+
+  const invalidPair = pairSeats.some((item) => !canChooseSeat(item));
+  if (invalidPair) {
+    alert("Ghế đôi này đã có ghế bị đặt hoặc đang giữ.");
+    return;
+  }
+
+  setSelectedSeats((prev) => {
+    const pairIds = pairSeats.map((item) => item.id);
+    const isSelected = pairIds.every((id) =>
+      prev.some((item) => item.id === id)
+    );
+
+    if (isSelected) {
+      return prev.filter((item) => !pairIds.includes(item.id));
     }
 
-    setSelectedSeats((prev) => {
-      const pairIds = pairSeats.map((item) => item.id);
-      const isSelected = pairIds.every((id) =>
-        prev.some((item) => item.id === id)
-      );
-
-      if (isSelected) {
-        return prev.filter((item) => !pairIds.includes(item.id));
-      }
-
-      const withoutPair = prev.filter((item) => !pairIds.includes(item.id));
-      return [...withoutPair, ...pairSeats];
-    });
-  }
+    const withoutPair = prev.filter((item) => !pairIds.includes(item.id));
+    return [...withoutPair, ...pairSeats];
+  });
+}
 
   function getSeatClass(seat) {
     const selected = selectedSeatIds.has(seat.id);
