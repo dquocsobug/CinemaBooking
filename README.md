@@ -2,7 +2,7 @@
 
 > Full-stack online movie ticket booking platform with realtime seat locking, JWT authentication, MoMo/VNPay integration, and WebSocket synchronization.
 
-🌐 **Live Demo:** [CinemaBooking Live Demo](https://your-demo-url.vercel.app)
+🌐 **Live Demo:** [CinemaBooking Live Demo](https://cinema-booking-dquoc.vercel.app/)
 
 ---
 
