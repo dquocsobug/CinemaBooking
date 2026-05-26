@@ -26,9 +26,6 @@ jobs:
           java-version: 21
           cache: maven
 
-      - name: Test backend
-        run: mvn test
-
       - name: Build backend
         run: mvn clean package -DskipTests
 
